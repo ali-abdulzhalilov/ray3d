@@ -1,5 +1,6 @@
 class Camera {
   float fov = 0.66;
+  boolean showFRS = true;
   
   void render() {
     background(0);

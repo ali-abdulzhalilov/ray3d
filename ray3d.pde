@@ -23,7 +23,7 @@ void draw() {
 }
 
 void update() {
-  
+  p.update();
 }
 
 void keyPressed() {

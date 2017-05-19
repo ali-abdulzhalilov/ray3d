@@ -21,25 +21,18 @@ class Controls {
   }
 
   void handleInput() {
-    float moveSpeed = t.deltaTime * 5.0; //the constant value is in squares/second
-    float rotSpeed = t.deltaTime * 3.0; //the constant value is in radians/second
+    
     if (keys[0]) {
-      if(m.worldMap[int(p.pos.x + p.dir.x * moveSpeed)][int(p.pos.y)] == 0) p.pos.x += p.dir.x * moveSpeed;
-      if(m.worldMap[int(p.pos.x)][int(p.pos.y + p.dir.y * moveSpeed)] == 0) p.pos.y += p.dir.y * moveSpeed;
+      p.dmov = 1;
     }
     if (keys[1]) {
-      if(m.worldMap[int(p.pos.x - p.dir.x * moveSpeed)][int(p.pos.y)] == 0) p.pos.x -= p.dir.x * moveSpeed;
-      if(m.worldMap[int(p.pos.x)][int(p.pos.y - p.dir.y * moveSpeed)] == 0) p.pos.y -= p.dir.y * moveSpeed;
+      p.dmov = -1;
     }
     if (keys[2]) {
-      float oldDirX = p.dir.x;
-      p.dir.x = p.dir.x * cos(-rotSpeed) - p.dir.y * sin(-rotSpeed);
-      p.dir.y = oldDirX * sin(-rotSpeed) + p.dir.y * cos(-rotSpeed);
+      p.drot = 1;
     }
     if (keys[3]) {
-      float oldDirX = p.dir.x;
-      p.dir.x = p.dir.x * cos(rotSpeed) - p.dir.y * sin(rotSpeed);
-      p.dir.y = oldDirX * sin(rotSpeed) + p.dir.y * cos(rotSpeed);
+      p.drot = -1;
     }
     if (keys[4]) {
     
