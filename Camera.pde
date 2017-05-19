@@ -1,6 +1,6 @@
 class Camera {
   float fov = 0.66;
-  boolean showFRS = true;
+  boolean showFPS = true;
   
   void render() {
     background(0);
@@ -40,10 +40,23 @@ class Camera {
   
       //give x and y sides different brightness
       if (side == 1) {c = color(red(c)/2, green(c)/2, blue(c)/2);}
-  
-      stroke(c);
-      line(x, drawStart, x, drawEnd);
-      //draw the pixels of the stripe as a vertical line
+      
+      drawColumn(x, drawStart, drawEnd, c);
     }
+    
+    if (showFPS) {
+      drawFPS();
+    }
+  }
+  
+  void drawColumn(float x, float y1, float y2, color c) {
+    stroke(c);
+    line(x, y1, x, y2);
+  }
+  
+  void drawFPS() {
+    textAlign(LEFT, TOP);
+    textSize(20);
+    text(int(1.0 / t.deltaTime), 0, 0);
   }
 }
