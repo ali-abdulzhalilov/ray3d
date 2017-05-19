@@ -6,21 +6,26 @@ class Camera {
     background(0);
     
     for(int x = 0; x < width; x++) {
-      //calculate ray position and direction
+      drawColumn(x);
+    }
+    
+    if (showFPS) {
+      drawFPS();
+    }
+  }
+  
+  void drawColumn(int x) {
+    //calculate ray position and direction
       float cameraX = 2 * x / float(width) - 1; //x-coordinate in camera space
       PVector rayPos = new PVector(p.pos.x, p.pos.y);
-      PVector plane = new PVector(p.dir.y, -p.dir.x);
-      plane.normalize();
-      plane.mult(fov);
+      PVector plane = (new PVector(p.dir.y, -p.dir.x)).normalize().mult(fov);
       PVector rayDir = new PVector(p.dir.x + plane.x * cameraX, p.dir.y + plane.y * cameraX);
       
       float[] castHit = m.cast(rayPos, rayDir);
       PVector map = new PVector(castHit[0], castHit[1]);
-      int side = int(castHit[2]);
-      float perpWallDist = castHit[3];
   
       //Calculate height of line to draw on screen
-      int lineHeight = (int)(height / perpWallDist);
+      int lineHeight = (int)(height / castHit[3]);
   
       //calculate lowest and highest pixel to fill in current stripe
       int drawStart = -lineHeight / 2 + height / 2;
@@ -39,17 +44,12 @@ class Camera {
       }
   
       //give x and y sides different brightness
-      if (side == 1) {c = color(red(c)/2, green(c)/2, blue(c)/2);}
+      if (castHit[2] == 1) {c = color(red(c)/2, green(c)/2, blue(c)/2);}
       
-      drawColumn(x, drawStart, drawEnd, c);
-    }
-    
-    if (showFPS) {
-      drawFPS();
-    }
+      verLine(x, drawStart, drawEnd, c);
   }
   
-  void drawColumn(float x, float y1, float y2, color c) {
+  void verLine(float x, float y1, float y2, color c) {
     stroke(c);
     line(x, y1, x, y2);
   }
