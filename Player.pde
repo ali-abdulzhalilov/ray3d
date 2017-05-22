@@ -1,5 +1,5 @@
 class Player {
-  PVector pos = new PVector(20, 20);
+  PVector pos = new PVector(22, 11.5);
   PVector dir = new PVector(-1, 0);
   float dmov = 0, drot = 0;
   

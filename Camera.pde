@@ -1,13 +1,17 @@
 class Camera {
   float fov = 0.66;
   boolean showFPS = true;
+  PImage buffer = createImage(width, height, RGB);
   
   void render() {
-    background(0);
+    buffer.loadPixels();
+    for (int i = 0; i < buffer.pixels.length; i++) buffer.pixels[i] = color(0);
     
     for(int x = 0; x < width; x++) {
       drawColumn(x);
     }
+    buffer.updatePixels();
+    image(buffer, 0, 0);
     
     if (showFPS) {
       drawFPS();
@@ -23,35 +27,41 @@ class Camera {
       
       float[] castHit = m.cast(rayPos, rayDir);
       PVector map = new PVector(castHit[0], castHit[1]);
+      int side = int(castHit[2]);
+      float perpWallDist = castHit[3];
   
       //Calculate height of line to draw on screen
-      int lineHeight = (int)(height / castHit[3]);
+      int lineHeight = (int)(height / perpWallDist);
   
       //calculate lowest and highest pixel to fill in current stripe
       int drawStart = -lineHeight / 2 + height / 2;
-      if(drawStart < 0)drawStart = 0;
+      if(drawStart < 0) drawStart = 0;
       int drawEnd = lineHeight / 2 + height / 2;
-      if(drawEnd >= height)drawEnd = height - 1;
-  
-      //choose wall color
-      color c;
-      switch(m.worldMap[int(map.x)][int(map.y)]) {
-        case 1:  c = color(255,   0,   0); break; //red
-        case 2:  c = color(  0, 255,   0); break; //green
-        case 3:  c = color(  0,   0, 255); break; //blue
-        case 4:  c = color(255, 255, 255); break; //white
-        default: c = color(255, 255,   0); break; //yellow
-      }
-  
-      //give x and y sides different brightness
-      if (castHit[2] == 1) {c = color(red(c)/2, green(c)/2, blue(c)/2);}
+      if(drawEnd >= height) drawEnd = height - 1;
       
-      verLine(x, drawStart, drawEnd, c);
-  }
-  
-  void verLine(float x, float y1, float y2, color c) {
-    stroke(c);
-    line(x, y1, x, y2);
+      //texturing calculations
+      int texNum = m.worldMap[int(map.x)][int(map.y)] - 1; //1 subtracted from it so that texture 0 can be used!
+      
+      //calculate value of wallX
+      float wallX; //where exactly the wall was hit
+      if (side == 0) wallX = rayPos.y + perpWallDist * rayDir.y;
+      else           wallX = rayPos.x + perpWallDist * rayDir.x;
+      wallX -= floor((wallX));
+      
+      //x coordinate on the texture
+      int texX = int(wallX * texWidth);
+      if(side == 0 && rayDir.x > 0) texX = texWidth - texX - 1;
+      if(side == 1 && rayDir.y < 0) texX = texWidth - texX - 1;
+      
+      
+      for(int y = drawStart; y < drawEnd; y++) {
+        int d = y * 256 - height * 128 + lineHeight * 128;  //256 and 128 factors to avoid floats
+        int texY = ((d * texHeight) / lineHeight) / 256;
+        color c = texture[texNum][texHeight * texY + texX];
+        //make color darker for y-sides: R, G and B byte each divided through two with a "shift" and an "and"
+        if(side == 1) c = color(red(c)/2, green(c)/2, blue(c)/2);
+        buffer.pixels[buffer.width * y + x] = c;
+      }
   }
   
   void drawFPS() {
