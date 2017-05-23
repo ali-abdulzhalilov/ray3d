@@ -78,6 +78,68 @@ class Camera {
         if(side == 1) c = color(red(c)/2, green(c)/2, blue(c)/2);
         buffer.pixels[buffer.width * y + x] = c;
       }
+      
+      //FLOOR CASTING
+      float floorXWall, floorYWall; //x, y position of the floor texel at the bottom of the wall
+
+      //4 different wall directions possible
+      if(side == 0 && rayDir.x > 0)
+      {
+        floorXWall = map.x;
+        floorYWall = map.y + wallX;
+      }
+      else if(side == 0 && rayDir.x < 0)
+      {
+        floorXWall = map.x + 1.0;
+        floorYWall = map.y + wallX;
+      }
+      else if(side == 1 && rayDir.y > 0)
+      {
+        floorXWall = map.x + wallX;
+        floorYWall = map.y;
+      }
+      else
+      {
+        floorXWall = map.x + wallX;
+        floorYWall = map.y + 1.0;
+      }
+
+      float distWall, distPlayer, currentDist;
+
+      distWall = perpWallDist;
+      distPlayer = 0.0;
+
+      if (drawEnd < 0) drawEnd = height; //becomes < 0 when the integer overflows
+
+      //draw the floor from drawEnd to the bottom of the screen
+      for(int y = drawEnd + 1; y < height; y++)
+      {
+        currentDist = height / (2.0 * y - height); //you could make a small lookup table for this instead
+
+        float weight = (currentDist - distPlayer) / (distWall - distPlayer);
+
+        float currentFloorX = weight * floorXWall + (1.0 - weight) * p.pos.x;
+        float currentFloorY = weight * floorYWall + (1.0 - weight) * p.pos.y;
+
+        int floorTexX, floorTexY;
+        //floorTexX = int(currentFloorX * texWidth) % texWidth;
+        floorTexX = int(currentFloorX * 64) % 64;
+        //floorTexY = int(currentFloorY * texHeight) % texHeight;
+        floorTexY = int(currentFloorY * 64) % 64;
+        
+        //int checkerBoardPattern = (int(currentFloorX) + int(currentFloorY)) % 2; // checkboard
+        int checkerBoardPattern = (int(currentFloorX + currentFloorY)) % 2; // stripes
+        int floorTexture;
+        if(checkerBoardPattern == 0) floorTexture = 3;
+        else floorTexture = 4;
+
+        //floor
+        //buffer[y][x] = (texture[3][texWidth * floorTexY + floorTexX] >> 1) & 8355711;
+        buffer.pixels[buffer.width * y + x] = textures[floorTexture].pixels[64 * floorTexY + floorTexX];
+        //ceiling (symmetrical!)
+        //buffer[h - y][x] = texture[6][texWidth * floorTexY + floorTexX];
+        buffer.pixels[buffer.width * (height - y) + x] = textures[6].pixels[64 * floorTexY + floorTexX];
+      }
   }
   
   void drawFPS() {
