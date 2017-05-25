@@ -12,8 +12,8 @@ class Player {
   }
   
   void mov() {
-    if(m.worldMap[int(p.pos.x + dir.x * moveSpeed * dmov * t.deltaTime)][int(pos.y)] == 0) pos.x += dir.x * moveSpeed * dmov * t.deltaTime;
-    if(m.worldMap[int(p.pos.x)][int(pos.y + dir.y * moveSpeed * dmov * t.deltaTime)] == 0) pos.y += dir.y * moveSpeed * dmov * t.deltaTime;
+    if(m.worldMap[int(p.pos.x + dir.x * moveSpeed * dmov * t.deltaTime * 2)][int(pos.y)] == 0) pos.x += dir.x * moveSpeed * dmov * t.deltaTime;
+    if(m.worldMap[int(p.pos.x)][int(pos.y + dir.y * moveSpeed * dmov * t.deltaTime * 2)] == 0) pos.y += dir.y * moveSpeed * dmov * t.deltaTime;
     dmov = 0;
   }
   

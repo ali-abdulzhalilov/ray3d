@@ -8,6 +8,7 @@ Player p;
 
 void setup() {
   size(640, 480);
+  smooth();
   
   m = new Map();
   t = new Time();

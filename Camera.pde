@@ -135,7 +135,7 @@ class Camera {
 
         //floor
         //buffer[y][x] = (texture[3][texWidth * floorTexY + floorTexX] >> 1) & 8355711;
-        buffer.pixels[buffer.width * y + x] = textures[floorTexture].pixels[64 * floorTexY + floorTexX];
+        buffer.pixels[buffer.width * y + x] = textures[3].pixels[64 * floorTexY + floorTexX];
         //ceiling (symmetrical!)
         //buffer[h - y][x] = texture[6][texWidth * floorTexY + floorTexX];
         buffer.pixels[buffer.width * (height - y) + x] = textures[6].pixels[64 * floorTexY + floorTexX];
